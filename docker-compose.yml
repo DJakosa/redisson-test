@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  tomcat1:
+    image: tomcat:9-jdk8
+    ports:
+      - 8090:8080
+      - 8001:8000
+    environment:
+      JPDA_ADDRESS: 8000
+      JPDA_TRANSPORT: dt_socket
+    command: /usr/local/tomcat/bin/catalina.sh jpda run
+    volumes:
+      - ./volume/conf/context.xml:/usr/local/tomcat/conf/context.xml
+      - ./volume/conf/server.xml:/usr/local/tomcat/conf/server.xml
+      - ./volume/conf/redisson.yaml:/usr/local/tomcat/conf/redisson.yaml
+      - ./volume/lib/redisson-all-3.11.6.jar:/usr/local/tomcat/lib/redisson-all-3.11.6.jar
+      - ./volume/lib/redisson-tomcat-9-3.11.6.jar:/usr/local/tomcat/lib/redisson-tomcat-9-3.11.6.jar
+      - ./app-a/target/app-a.war:/usr/local/tomcat/webapps/app-a.war
+    links:
+      - "redis:redishostname"
+  tomcat2:
+    image: tomcat:9-jdk8
+    ports:
+      - 8091:8080
+      - 8002:8000
+    environment:
+      JPDA_ADDRESS: 8000
+      JPDA_TRANSPORT: dt_socket
+    command: /usr/local/tomcat/bin/catalina.sh jpda run
+    volumes:
+      - ./volume/conf/context.xml:/usr/local/tomcat/conf/context.xml
+      - ./volume/conf/server.xml:/usr/local/tomcat/conf/server.xml
+      - ./volume/conf/redisson.yaml:/usr/local/tomcat/conf/redisson.yaml
+      - ./volume/lib/redisson-all-3.11.6.jar:/usr/local/tomcat/lib/redisson-all-3.11.6.jar
+      - ./volume/lib/redisson-tomcat-9-3.11.6.jar:/usr/local/tomcat/lib/redisson-tomcat-9-3.11.6.jar
+      - ./app-a/target/app-a.war:/usr/local/tomcat/webapps/app-a.war
+      - ./app-a/target/app-a.war:/usr/local/tomcat/webapps/app-a2.war
+      - ./app-b/target/app-b.war:/usr/local/tomcat/webapps/app-b.war
+    links:
+      - "redis:redishostname"
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
